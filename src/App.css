@@ -1,0 +1,37 @@
+/* App.css — Optional custom styles beyond Tailwind */
+
+/* Smooth scrolling for anchor links */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Override scrollbar appearance (optional aesthetic) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #152437;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #F36C3D;
+  border-radius: 4px;
+}
+
+/* Section spacing utility */
+.section {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+@media (min-width: 768px) {
+  .section {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Simple fade-in animation for page transitions */
+.fade-in {
+  animation: fadeIn 0.8s ease-in-out;
+}

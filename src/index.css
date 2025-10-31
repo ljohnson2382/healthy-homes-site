@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Fallback body styles (avoiding @apply for custom color) */
+body {
+  background-color: #152437; /* navy */
+  color: #ffffff;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+h1, h2, h3, h4 {
+  font-weight: 700;
+}
