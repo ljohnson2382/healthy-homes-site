@@ -16,32 +16,35 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 left-0 w-full bg-navy/90 backdrop-blur-md z-50 shadow-md">
+      {/* Logo Section */}
       <div className="max-w-6xl mx-auto flex items-center justify-between p-4">
-        <Link to="/" className="flex items-center">
-          <img src="/logo.svg" alt="3 Boys Handyman" className="h-16 md:h-20 w-auto" />
+        <Link to="/" className="flex items-center mx-auto md:mx-0">
+          <img src="/logo.svg" alt="3 Boys Handyman" className="h-24 md:h-32 w-auto" />
           <span className="sr-only">3 Boys Handyman</span>
         </Link>
 
-        {/* Desktop Links */}
-        <div className="hidden md:flex space-x-6">
+        {/* Mobile Menu Button */}
+        <button
+          onClick={toggleMenu}
+          className="md:hidden text-orange focus:outline-none text-2xl p-2 absolute right-4 top-4"
+        >
+          ☰
+        </button>
+      </div>
+
+      {/* Desktop Navigation Links - Bottom */}
+      <div className="hidden md:block bg-navy/80 border-t border-midGray">
+        <div className="max-w-6xl mx-auto flex justify-center space-x-8 py-3">
           {navLinks.map((link) => (
             <Link
               key={link.name}
               to={link.path}
-              className="hover:text-orange transition-colors"
+              className="hover:text-orange transition-colors text-white"
             >
               {link.name}
             </Link>
           ))}
         </div>
-
-        {/* Mobile Menu Button */}
-        <button
-          onClick={toggleMenu}
-          className="md:hidden text-orange focus:outline-none text-2xl p-2"
-        >
-          ☰
-        </button>
       </div>
 
       {/* Mobile Menu */}
