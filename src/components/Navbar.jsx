@@ -34,16 +34,18 @@ const Navbar = () => {
 
       {/* Desktop Navigation Links - Bottom */}
       <div className="hidden md:block bg-navy/80 border-t border-midGray">
-        <div className="max-w-6xl mx-auto flex justify-center space-x-8 py-3">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              to={link.path}
-              className="hover:text-orange transition-colors text-white"
-            >
-              {link.name}
-            </Link>
-          ))}
+        <div className="max-w-6xl mx-auto">
+          <div className="flex justify-end space-x-8 py-3 pr-6">
+            {navLinks.map((link) => (
+              <Link
+                key={link.name}
+                to={link.path}
+                className="hover:text-orange transition-colors text-white"
+              >
+                {link.name}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
 
