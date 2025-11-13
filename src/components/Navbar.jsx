@@ -18,7 +18,7 @@ const Navbar = () => {
     <nav className="fixed top-0 left-0 w-full bg-navy/90 backdrop-blur-md z-50 shadow-md">
       <div className="max-w-6xl mx-auto flex items-center justify-between p-4">
         <Link to="/" className="flex items-center">
-          <img src="/logo.svg" alt="3 Boys Handyman" className="h-12 md:h-16 w-auto" />
+          <img src="/logo.svg" alt="3 Boys Handyman" className="h-16 md:h-20 w-auto" />
           <span className="sr-only">3 Boys Handyman</span>
         </Link>
 
@@ -38,7 +38,7 @@ const Navbar = () => {
         {/* Mobile Menu Button */}
         <button
           onClick={toggleMenu}
-          className="md:hidden text-orange focus:outline-none"
+          className="md:hidden text-orange focus:outline-none text-2xl p-2"
         >
           ☰
         </button>
