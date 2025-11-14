@@ -39,11 +39,15 @@ export default function Portfolio() {
 
         {selected && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70" onClick={() => setSelected(null)}>
-            <div className="max-w-4xl w-full p-4" onClick={(e) => e.stopPropagation()}>
-              <div className="flex justify-end">
-                <button className="text-white text-2xl" onClick={() => setSelected(null)} aria-label="Close">✕</button>
+            <div className="w-full p-4 flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+              <div className="relative">
+                <button className="text-white text-2xl absolute -top-2 -right-2 bg-black/50 rounded-full p-1" onClick={() => setSelected(null)} aria-label="Close">✕</button>
+                <img
+                  src={selected}
+                  alt="Selected project"
+                  className="max-w-[90vw] max-h-[90vh] w-auto h-auto object-contain rounded-lg shadow-xl"
+                />
               </div>
-              <img src={selected} alt="Selected project" className="w-full h-auto rounded-lg shadow-xl mt-2" />
             </div>
           </div>
         )}
