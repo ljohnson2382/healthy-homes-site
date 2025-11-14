@@ -46,7 +46,7 @@ const Testimonials = () => {
       {/* Add Testimonial Form */}
         <form
           onSubmit={handleSubmit}
-          className="max-w-lg mx-auto mt-12 bg-lightGray border border-midGray/10 rounded-2xl p-6 shadow-sm"
+          className="w-full mt-12 bg-lightGray border border-midGray/10 rounded-2xl p-6 shadow-sm"
         >
           <h3 className="text-xl font-semibold text-navy mb-4 text-center">
             Share Your Experience
@@ -75,7 +75,7 @@ const Testimonials = () => {
           />
           <button
             type="submit"
-            className="bg-orange px-4 py-2 rounded hover:bg-yellow transition w-full font-semibold text-white"
+            className="bg-orange px-4 py-2 rounded hover:bg-yellow transition font-semibold text-white block mx-auto"
           >
             Submit Testimonial
           </button>
