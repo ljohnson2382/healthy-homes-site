@@ -1,22 +1,11 @@
 import { Link } from "react-router-dom";
+import Carousel from './Carousel';
 
 const Hero = () => {
-  // Put an image at /public/images/hero.jpg to use your own background
-  // The gradient ensures it still looks great even without an image
-  const heroStyle = {
-    // lighter overlay using the provided palette mid-gray/navy (#415A77) at reduced opacity
-    backgroundImage:
-      "linear-gradient(rgba(65,90,119,0.45), rgba(65,90,119,0.45)), url('/images/hero.jpg')",
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-  };
+  const carouselImages = ['/images/carousel-1.jpg']; // add more as carousel-2.jpg, carousel-3.jpg etc.
 
   return (
-    <section
-      role="banner"
-      className="relative w-full min-h-[72vh] md:min-h-[78vh] flex items-center justify-center text-center"
-      style={heroStyle}
-    >
+    <Carousel images={carouselImages} interval={6000}>
       <div className="max-w-6xl mx-auto px-4 md:px-8 w-full flex items-center justify-center">
         <div className="w-full max-w-3xl">
           <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold text-white leading-tight whitespace-normal md:whitespace-nowrap">
@@ -45,7 +34,7 @@ const Hero = () => {
           </div>
         </div>
       </div>
-    </section>
+    </Carousel>
   );
 };
 
