@@ -24,7 +24,7 @@ const About = () => (
           <p className="text-midGray mb-4 leading-relaxed">
             Healthy Homes, LLC was founded on the principle that quality craftsmanship 
             shouldn't be a luxury. We're a family-owned business committed to providing 
-            expert handyman and renovation services throughout Mansfield, New Hampshire 
+            expert construction and renovation services throughout Mansfield, New Hampshire 
             and the surrounding areas.
           </p>
           <p className="text-midGray mb-4 leading-relaxed">

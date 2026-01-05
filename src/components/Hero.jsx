@@ -35,7 +35,7 @@ const Hero = () => {
         <div className="max-w-6xl mx-auto px-4 md:px-8 py-12 lg:py-16 w-full flex items-center justify-center">
           <div className="w-full max-w-3xl">
             <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold text-white leading-tight whitespace-normal md:whitespace-nowrap">
-              Expert Handyman Services
+              Expert Home Services
             </h1>
 
             <p className="text-lg md:text-xl text-lightGray mt-4 md:mt-6 max-w-prose mx-auto">

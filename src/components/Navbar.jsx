@@ -19,8 +19,8 @@ const Navbar = () => {
       {/* Logo Section */}
       <div className="max-w-6xl mx-auto flex items-center justify-between p-4">
         <Link to="/" className="flex items-center mx-auto md:mx-0">
-          <img src="/logo.svg" alt="3 Boys Handyman" className="h-24 md:h-32 w-auto" />
-          <span className="sr-only">3 Boys Handyman</span>
+          <img src="/logo.svg" alt="Healthy Homes, LLC" className="h-24 md:h-32 w-auto" />
+          <span className="sr-only">Healthy Homes, LLC</span>
         </Link>
 
         {/* Mobile Menu Button */}
