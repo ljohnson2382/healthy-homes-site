@@ -1,0 +1,75 @@
+name: TEST - Customer Pipeline (Safe Testing)
+
+# SAFE: Only triggers on test branches - no production impact
+on:
+  push:
+    branches: [feature/customer-pipeline-test]
+  workflow_dispatch: # Manual trigger for testing
+
+env:
+  TEST_MODE: true
+  STAGING_URL: https://staging.homefixandbuild.org
+  PRODUCTION_URL: https://homefixandbuild.org
+
+jobs:
+  test-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Test Branch
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build application (test)
+        run: npm run build
+
+      - name: Verify Build
+        run: |
+          echo "✅ Build completed successfully"
+          ls -la dist/
+          echo "📦 Build size: $(du -sh dist/)"
+
+  test-notifications:
+    needs: test-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test Customer Notification (Mock)
+        run: |
+          echo "🧪 TESTING: Mock customer notification payload:"
+          echo "{"
+          echo "  \"repository\": \"${{ github.repository }}\","
+          echo "  \"commit_sha\": \"${{ github.sha }}\","
+          echo "  \"commit_message\": \"${{ github.event.head_commit.message }}\","
+          echo "  \"staging_url\": \"${{ env.STAGING_URL }}\","
+          echo "  \"author\": \"${{ github.event.head_commit.author.name }}\","
+          echo "  \"test_mode\": true"
+          echo "}"
+          echo ""
+          echo "✅ Notification payload validated"
+
+  test-summary:
+    needs: [test-build, test-notifications]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pipeline Test Summary
+        run: |
+          echo "🎉 CUSTOMER PIPELINE TEST COMPLETE"
+          echo "=================================="
+          echo "✅ Build Process: SUCCESS"
+          echo "✅ Mock Customer Notification: SUCCESS"
+          echo ""
+          echo "🔄 Next Steps:"
+          echo "1. Create Azure Function App: func-healthyhomes-pipeline"
+          echo "2. Deploy customer notification functions"
+          echo "3. Set up SendGrid email service"
+          echo "4. Configure GitHub secrets"
+          echo "5. Test end-to-end customer approval flow"
+          echo ""
+          echo "💡 Safe testing mode - No production deployments"

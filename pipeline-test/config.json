@@ -1,0 +1,62 @@
+{
+  "test_mode": true,
+  "azure_resources": {
+    "function_app": "func-healthyhomes-pipeline",
+    "storage_account": "sthealthyhomespipeline",
+    "resource_group": "rg-healthyhomes-prod",
+    "region": "East US 2"
+  },
+  "services": {
+    "email_service": "sendgrid",
+    "notification_channels": ["email", "teams"]
+  },
+  "customer": {
+    "email": "customer@3boyslawton.com",
+    "name": "3 Boys Handyman Customer"
+  },
+  "urls": {
+    "staging": "https://staging.homefixandbuild.org",
+    "production": "https://homefixandbuild.org"
+  },
+  "github": {
+    "repo": "ljohnson2382/3-Boys-Handyman-LLC",
+    "test_branches": [
+      "feature/customer-pipeline-test",
+      "feature/customer-pipeline-test-target"
+    ]
+  },
+  "required_secrets": [
+    "AZURE_FUNCTION_KEY",
+    "SENDGRID_API_KEY", 
+    "GITHUB_TOKEN",
+    "CUSTOMER_EMAIL"
+  ],
+  "workflow_triggers": {
+    "staging_deploy": "Push to staging branch",
+    "customer_notification": "POST to Azure Function",
+    "pr_creation": "Automatic from staging to main",
+    "customer_response": "Email reply processing"
+  },
+  "test_scenarios": [
+    {
+      "name": "Customer Approval Flow",
+      "steps": [
+        "Push to staging → triggers deployment",
+        "Azure Function sends mock email",
+        "Customer replies 'APPROVE'",
+        "PR auto-approved and merged to main",
+        "Production deployment triggered"
+      ]
+    },
+    {
+      "name": "Customer Request Changes Flow", 
+      "steps": [
+        "Push to staging → triggers deployment",
+        "Azure Function sends mock email",
+        "Customer replies 'REQUEST CHANGES: Fix the header'",
+        "PR marked as changes requested",
+        "Developer addresses feedback"
+      ]
+    }
+  ]
+}
