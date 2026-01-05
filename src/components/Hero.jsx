@@ -13,7 +13,15 @@ const Hero = () => {
   };
 
   // Only include existing carousel images from /public/images
-  const carouselImages = ['/images/carousel-1.jpg'];
+  const carouselImages = [
+    '/images/carousel-1.jpg',
+    '/images/about-hero-exterior-home.jpg',
+    '/images/services-hero-interior-bathroom.jpg',
+    '/images/contact-hero-exterior-landscaping.jpg',
+    '/images/services-section-exterior-deck.jpg',
+    '/images/about-section-interior-kitchen.jpg',
+    '/images/image_6.jpg'
+  ];
 
   return (
     <>
