@@ -5,9 +5,9 @@ const Footer = () => {
     <footer className="bg-navy border-t border-midGray/40">
       <div className="max-w-6xl mx-auto px-4 md:px-8 py-8 flex flex-col md:flex-row items-center md:items-start justify-between gap-6">
         <div>
-          <div className="text-orange font-extrabold text-xl">3 Boys Handyman LLC</div>
+          <div className="text-orange font-extrabold text-xl">Healthy Homes, LLC</div>
           <p className="text-lightGray mt-2">
-            Professional construction and home repair services in Greater Boston.
+            Professional construction and home repair services in Mansfield, New Hampshire.
           </p>
         </div>
 
@@ -20,7 +20,7 @@ const Footer = () => {
       </div>
 
       <div className="text-center text-lightGray/70 text-sm pb-6">
-        © {new Date().getFullYear()} 3 Boys Handyman LLC. All rights reserved.
+        © {new Date().getFullYear()} Healthy Homes, LLC. All rights reserved.
       </div>
     </footer>
   );
