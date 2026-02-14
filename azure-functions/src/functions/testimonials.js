@@ -12,16 +12,16 @@ app.http('testimonials', {
 
         try {
             if (request.method === 'GET') {
-                // GET: Fetch all approved testimonials
-                context.log('Fetching testimonials');
+                // GET: Fetch all approved testimonials (including Facebook reviews)
+                context.log('Fetching testimonials including Facebook reviews');
                 
-                // For now, we'll return hardcoded testimonials + any stored ones
-                // In a real app, you'd fetch from a database
+                // Static testimonials
                 const defaultTestimonials = [
                     { 
                         quote: "They did an amazing job on my kitchen remodel! Professional, timely, and exceeded expectations.", 
                         name: "Sarah M.", 
                         location: "Somerville, MA",
+                        source: "Website",
                         approved: true,
                         id: 1 
                     },
@@ -29,6 +29,7 @@ app.http('testimonials', {
                         quote: "Reliable and skilled — I'll definitely hire them again. Great communication throughout the project.", 
                         name: "David R.", 
                         location: "Waltham, MA",
+                        source: "Website",
                         approved: true,
                         id: 2 
                     },
@@ -36,14 +37,63 @@ app.http('testimonials', {
                         quote: "Outstanding deck construction! The team was professional and finished ahead of schedule.", 
                         name: "Michael K.", 
                         location: "Manchester, NH",
+                        source: "Website",
                         approved: true,
                         id: 3 
                     }
                 ];
                 
-                // TODO: In production, fetch from Azure Table Storage, Cosmos DB, or SQL Database
+                // Fetch fresh Facebook reviews
+                let facebookTestimonials = [];
+                try {
+                    const pageId = process.env.FACEBOOK_PAGE_ID;
+                    const accessToken = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
+                    
+                    if (pageId && accessToken) {
+                        context.log('Fetching live Facebook reviews...');
+                        const reviewsUrl = `https://graph.facebook.com/v18.0/${pageId}/ratings?access_token=${accessToken}&fields=review_text,reviewer,rating,created_time&limit=20`;
+                        
+                        const response = await fetch(reviewsUrl);
+                        if (response.ok) {
+                            const data = await response.json();
+                            
+                            facebookTestimonials = data.data
+                                .filter(review => 
+                                    review.review_text && 
+                                    review.review_text.trim().length > 10 && 
+                                    review.rating >= 4
+                                )
+                                .map(review => ({
+                                    id: `fb_${review.reviewer.id}_${new Date(review.created_time).getTime()}`,
+                                    quote: review.review_text.trim(),
+                                    name: review.reviewer.name,
+                                    location: '',
+                                    source: 'Facebook',
+                                    rating: review.rating,
+                                    submitted: review.created_time,
+                                    approved: true
+                                }));
+                                
+                            context.log(`✅ Loaded ${facebookTestimonials.length} Facebook reviews`);
+                        } else {
+                            context.log.warn('Failed to fetch Facebook reviews:', response.status);
+                        }
+                    }
+                } catch (fbError) {
+                    context.log.error('Error fetching Facebook reviews:', fbError);
+                    // Don't fail the request if Facebook is down
+                }
+                
+                // Combine all testimonials
                 const storedTestimonials = context.bindings?.testimonials || [];
-                const allTestimonials = [...defaultTestimonials, ...storedTestimonials.filter(t => t.approved)];
+                const allTestimonials = [
+                    ...defaultTestimonials, 
+                    ...facebookTestimonials,
+                    ...storedTestimonials.filter(t => t.approved)
+                ];
+                
+                // Sort by most recent first
+                allTestimonials.sort((a, b) => new Date(b.submitted || 0) - new Date(a.submitted || 0));
                 
                 return {
                     status: 200,
@@ -53,7 +103,12 @@ app.http('testimonials', {
                     },
                     body: JSON.stringify({
                         success: true,
-                        testimonials: allTestimonials
+                        testimonials: allTestimonials,
+                        stats: {
+                            total: allTestimonials.length,
+                            facebook: facebookTestimonials.length,
+                            website: allTestimonials.length - facebookTestimonials.length
+                        }
                     })
                 };
                 
