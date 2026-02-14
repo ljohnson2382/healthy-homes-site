@@ -1,4 +1,5 @@
 const { app } = require('@azure/functions');
+const { EmailClient } = require('@azure/communication-email');
 
 app.http('contact-form', {
     methods: ['POST'],
@@ -29,9 +30,58 @@ app.http('contact-form', {
                 };
             }
             
+            // Initialize Email Client (connection string from environment variables)
+            const connectionString = process.env.COMMUNICATION_SERVICES_CONNECTION_STRING;
+            
+            if (!connectionString) {
+                context.log.error('COMMUNICATION_SERVICES_CONNECTION_STRING not configured');
+                // Fall back to logging for now
+                context.log('Email content (not sent - no connection string):', {
+                    to: 'info@homefixandbuild.org',
+                    from: email,
+                    subject: `New Quote Request from ${firstName} ${lastName}`,
+                    customerInfo: { firstName, lastName, email, phone, service, projectDetails }
+                });
+                
+                return {
+                    status: 200,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    body: JSON.stringify({
+                        success: true,
+                        message: 'Thank you! Your message has been received. We will contact you within 24 hours.'
+                    })
+                };
+            }
+            
+            const emailClient = new EmailClient(connectionString);
+            
             // Email content
-            const emailContent = `
-New Contact Form Submission from Healthy Homes Website
+            const emailHtml = `
+                <h2>New Contact Form Submission - Healthy Homes LLC</h2>
+                
+                <h3>Customer Information:</h3>
+                <ul>
+                    <li><strong>Name:</strong> ${firstName} ${lastName}</li>
+                    <li><strong>Email:</strong> ${email}</li>
+                    <li><strong>Phone:</strong> ${phone}</li>
+                    <li><strong>Service Requested:</strong> ${service}</li>
+                </ul>
+                
+                <h3>Project Details:</h3>
+                <p>${projectDetails.replace(/\n/g, '<br>')}</p>
+                
+                <hr>
+                <p><small>
+                    Submitted from: <a href="https://staging.homefixandbuild.org/contact">https://staging.homefixandbuild.org/contact</a><br>
+                    Time: ${new Date().toLocaleString()}
+                </small></p>
+            `;
+            
+            const emailPlainText = `
+New Contact Form Submission - Healthy Homes LLC
 
 Customer Information:
 - Name: ${firstName} ${lastName}
@@ -47,23 +97,34 @@ Submitted from: https://staging.homefixandbuild.org/contact
 Time: ${new Date().toLocaleString()}
             `;
             
-            context.log('Form data processed:', { firstName, lastName, email, phone, service });
+            // Send email using Azure Communication Services
+            const emailMessage = {
+                senderAddress: process.env.SENDER_EMAIL || 'noreply@your-azure-domain.azurecomm.net',
+                content: {
+                    subject: `New Quote Request from ${firstName} ${lastName} - ${service}`,
+                    plainText: emailPlainText,
+                    html: emailHtml
+                },
+                recipients: {
+                    to: [
+                        {
+                            address: 'info@homefixandbuild.org'
+                        }
+                    ],
+                    // Optional: CC to owner
+                    cc: [
+                        {
+                            address: 'nicky@homefixandbuild.org'
+                        }
+                    ]
+                }
+            };
             
-            // For now, we'll log the email content
-            // In a production environment, you would integrate with:
-            // - Azure Communication Services Email
-            // - SendGrid
-            // - Or another email service
+            context.log('Sending email via Azure Communication Services...');
+            const poller = await emailClient.beginSend(emailMessage);
+            const result = await poller.pollUntilDone();
             
-            context.log('Email content prepared:', emailContent);
-            
-            // TODO: Integrate with actual email service
-            // Example with SendGrid or Azure Communication Services:
-            // await sendEmail({
-            //     to: 'info@homefixandbuild.org',
-            //     subject: `New Quote Request from ${firstName} ${lastName}`,
-            //     html: emailContent.replace(/\n/g, '<br>')
-            // });
+            context.log('Email sent successfully:', result.id);
             
             return {
                 status: 200,
@@ -75,7 +136,8 @@ Time: ${new Date().toLocaleString()}
                 },
                 body: JSON.stringify({
                     success: true,
-                    message: 'Thank you! Your message has been received. We will contact you within 24 hours.'
+                    message: 'Thank you! Your message has been sent successfully. We will contact you within 24 hours.',
+                    emailId: result.id
                 })
             };
             
