@@ -1,0 +1,13 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=homefixandbuild;AccountKey=<key>;EndpointSuffix=core.windows.net",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "TEST_MODE": "true",
+    "ZOHO_PROJECTS_CLIENT_ID": "your_zoho_projects_client_id",
+    "ZOHO_PROJECTS_CLIENT_SECRET": "your_zoho_projects_client_secret", 
+    "ZOHO_PROJECTS_REFRESH_TOKEN": "your_zoho_projects_refresh_token",
+    "COMPANY_EMAIL": "team@homefixandbuild.org",
+    "QUOTES_EMAIL": "quotes@homefixandbuild.org"
+  }
+}
