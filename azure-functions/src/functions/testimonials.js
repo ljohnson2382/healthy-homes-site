@@ -121,6 +121,31 @@ To approve this testimonial, log into your admin panel or contact your developer
                     context.log.error('Failed to send admin notification:', emailError);
                 }
                 
+                // Optional: Auto-post approved testimonials to Facebook
+                try {
+                    if (process.env.AUTO_POST_TO_FACEBOOK === 'true' && newTestimonial.approved) {
+                        context.log('Auto-posting testimonial to Facebook...');
+                        
+                        const facebookResponse = await fetch('/api/post-testimonial-to-facebook', {
+                            method: 'POST',
+                            headers: { 
+                                'Content-Type': 'application/json',
+                                'x-functions-key': process.env.FACEBOOK_SYNC_FUNCTION_KEY 
+                            },
+                            body: JSON.stringify({ testimonial: newTestimonial })
+                        });
+                        
+                        if (facebookResponse.ok) {
+                            context.log('Successfully posted to Facebook');
+                        } else {
+                            context.log.warn('Failed to post to Facebook:', await facebookResponse.text());
+                        }
+                    }
+                } catch (facebookError) {
+                    context.log.error('Facebook posting error:', facebookError);
+                    // Don't fail the main request if Facebook posting fails
+                }
+                
                 return {
                     status: 200,
                     headers: {
