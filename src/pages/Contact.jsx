@@ -1,4 +1,63 @@
-const Contact = () => (
+import { useState } from 'react';
+
+const Contact = () => {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    service: '',
+    projectDetails: ''
+  });
+  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null);
+  
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+    
+    try {
+      const response = await fetch('/api/contact-form', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        setSubmitStatus('success');
+        setFormData({
+          firstName: '',
+          lastName: '',
+          email: '',
+          phone: '',
+          service: '',
+          projectDetails: ''
+        });
+      } else {
+        setSubmitStatus('error');
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  return (
   <div className="min-h-screen bg-lightGray">
     {/* Hero Section */}
     <div className="relative h-64 md:h-80 bg-midGray overflow-hidden">
@@ -20,12 +79,29 @@ const Contact = () => (
         {/* Contact Form */}
         <div className="bg-white p-8 rounded-lg shadow-lg">
           <h2 className="text-2xl font-bold text-navy mb-6">Get Your Free Quote</h2>
-          <form className="space-y-6">
+          
+          {submitStatus === 'success' && (
+            <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+              Thank you! Your message has been sent successfully. We'll get back to you within 24 hours.
+            </div>
+          )}
+          
+          {submitStatus === 'error' && (
+            <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+              Sorry, there was an error sending your message. Please try again or call us directly at (857) 207-2145.
+            </div>
+          )}
+          
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-midGray mb-2">First Name</label>
                 <input 
                   type="text" 
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  required
                   className="w-full p-3 border border-midGray rounded-lg focus:ring-2 focus:ring-orange focus:border-orange" 
                   placeholder="John"
                 />
@@ -34,6 +110,10 @@ const Contact = () => (
                 <label className="block text-sm font-medium text-midGray mb-2">Last Name</label>
                 <input 
                   type="text" 
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  required
                   className="w-full p-3 border border-midGray rounded-lg focus:ring-2 focus:ring-orange focus:border-orange" 
                   placeholder="Smith"
                 />
@@ -43,6 +123,10 @@ const Contact = () => (
               <label className="block text-sm font-medium text-midGray mb-2">Email Address</label>
               <input 
                 type="email" 
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
                 className="w-full p-3 border border-midGray rounded-lg focus:ring-2 focus:ring-orange focus:border-orange" 
                 placeholder="john.smith@email.com"
               />
@@ -51,35 +135,54 @@ const Contact = () => (
               <label className="block text-sm font-medium text-midGray mb-2">Phone Number</label>
               <input 
                 type="tel" 
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                required
                 className="w-full p-3 border border-midGray rounded-lg focus:ring-2 focus:ring-orange focus:border-orange" 
                 placeholder="(555) 123-4567"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-midGray mb-2">Service Needed</label>
-              <select className="w-full p-3 border border-midGray rounded-lg focus:ring-2 focus:ring-orange focus:border-orange">
-                <option>Select a service...</option>
-                <option>Kitchen Remodeling</option>
-                <option>Bathroom Renovation</option>
-                <option>Deck Construction</option>
-                <option>Flooring Installation</option>
-                <option>General Repairs</option>
-                <option>Other</option>
+              <select 
+                name="service"
+                value={formData.service}
+                onChange={handleChange}
+                required
+                className="w-full p-3 border border-midGray rounded-lg focus:ring-2 focus:ring-orange focus:border-orange"
+              >
+                <option value="">Select a service...</option>
+                <option value="Kitchen Remodeling">Kitchen Remodeling</option>
+                <option value="Bathroom Renovation">Bathroom Renovation</option>
+                <option value="Deck Construction">Deck Construction</option>
+                <option value="Flooring Installation">Flooring Installation</option>
+                <option value="General Repairs">General Repairs</option>
+                <option value="Other">Other</option>
               </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-midGray mb-2">Project Details</label>
               <textarea 
                 rows="4" 
+                name="projectDetails"
+                value={formData.projectDetails}
+                onChange={handleChange}
+                required
                 className="w-full p-3 border border-midGray rounded-lg focus:ring-2 focus:ring-orange focus:border-orange" 
                 placeholder="Please describe your project, timeline, and any specific requirements..."
-              ></textarea>
+              />
             </div>
             <button 
               type="submit" 
-              className="w-full bg-orange text-white font-semibold py-3 px-6 rounded-lg hover:bg-orange/90 transition shadow-lg focus:outline-none focus:ring-2 focus:ring-orange/50"
+              disabled={isSubmitting}
+              className={`w-full font-semibold py-3 px-6 rounded-lg transition shadow-lg focus:outline-none focus:ring-2 focus:ring-orange/50 ${
+                isSubmitting 
+                  ? 'bg-gray-400 cursor-not-allowed' 
+                  : 'bg-orange text-white hover:bg-orange/90'
+              }`}
             >
-              Send Message & Get Free Quote
+              {isSubmitting ? 'Sending...' : 'Send Message & Get Free Quote'}
             </button>
           </form>
         </div>
@@ -173,6 +276,7 @@ const Contact = () => (
       </div>
     </div>
   </div>
-);
+  );
+};
 
 export default Contact;
