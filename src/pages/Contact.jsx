@@ -10,20 +10,120 @@ const Contact = () => {
     projectDetails: ''
   });
   
+  const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
   
+  // Phone number formatting function
+  const formatPhoneNumber = (value) => {
+    // Remove all non-digits
+    const phoneNumber = value.replace(/\D/g, '');
+    
+    // Format as (XXX) XXX-XXXX
+    if (phoneNumber.length <= 3) {
+      return phoneNumber;
+    } else if (phoneNumber.length <= 6) {
+      return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
+    } else {
+      return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
+    }
+  };
+  
+  // Validation functions
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+  
+  const validatePhone = (phone) => {
+    const phoneDigits = phone.replace(/\D/g, '');
+    return phoneDigits.length === 10;
+  };
+  
+  const validateField = (name, value) => {
+    let error = '';
+    
+    switch (name) {
+      case 'firstName':
+      case 'lastName':
+        if (!value.trim()) {
+          error = `${name === 'firstName' ? 'First' : 'Last'} name is required`;
+        } else if (value.trim().length < 2) {
+          error = `${name === 'firstName' ? 'First' : 'Last'} name must be at least 2 characters`;
+        }
+        break;
+      case 'email':
+        if (!value.trim()) {
+          error = 'Email is required';
+        } else if (!validateEmail(value)) {
+          error = 'Please enter a valid email address';
+        }
+        break;
+      case 'phone':
+        if (!value.trim()) {
+          error = 'Phone number is required';
+        } else if (!validatePhone(value)) {
+          error = 'Please enter a valid 10-digit phone number';
+        }
+        break;
+      case 'service':
+        if (!value) {
+          error = 'Please select a service';
+        }
+        break;
+      case 'projectDetails':
+        if (!value.trim()) {
+          error = 'Project details are required';
+        } else if (value.trim().length < 10) {
+          error = 'Please provide more details about your project (at least 10 characters)';
+        }
+        break;
+    }
+    
+    return error;
+  };
+  
   const handleChange = (e) => {
+    const { name, value } = e.target;
+    let formattedValue = value;
+    
+    // Format phone number as user types
+    if (name === 'phone') {
+      formattedValue = formatPhoneNumber(value);
+    }
+    
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: formattedValue
     });
+    
+    // Real-time validation
+    const error = validateField(name, formattedValue);
+    setErrors(prev => ({
+      ...prev,
+      [name]: error
+    }));
   };
   
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus(null);
+    
+    // Validate all fields
+    const newErrors = {};
+    Object.keys(formData).forEach(key => {
+      const error = validateField(key, formData[key]);
+      if (error) newErrors[key] = error;
+    });
+    
+    setErrors(newErrors);
+    
+    // If there are validation errors, stop submission
+    if (Object.keys(newErrors).length > 0) {
+      setIsSubmitting(false);
+      return;
+    }
     
     try {
       const response = await fetch('/api/contact-form', {
@@ -102,9 +202,12 @@ const Contact = () => {
                   value={formData.firstName}
                   onChange={handleChange}
                   required
-                  className="w-full p-3 border border-midGray rounded-lg focus:ring-2 focus:ring-orange focus:border-orange" 
+                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-orange focus:border-orange text-gray-900 placeholder-gray-500 ${
+                    errors.firstName ? 'border-red-500' : 'border-midGray'
+                  }`}
                   placeholder="John"
                 />
+                {errors.firstName && <p className="mt-1 text-sm text-red-500">{errors.firstName}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-midGray mb-2">Last Name</label>
@@ -114,9 +217,12 @@ const Contact = () => {
                   value={formData.lastName}
                   onChange={handleChange}
                   required
-                  className="w-full p-3 border border-midGray rounded-lg focus:ring-2 focus:ring-orange focus:border-orange" 
+                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-orange focus:border-orange text-gray-900 placeholder-gray-500 ${
+                    errors.lastName ? 'border-red-500' : 'border-midGray'
+                  }`}
                   placeholder="Smith"
                 />
+                {errors.lastName && <p className="mt-1 text-sm text-red-500">{errors.lastName}</p>}
               </div>
             </div>
             <div>
@@ -127,9 +233,12 @@ const Contact = () => {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full p-3 border border-midGray rounded-lg focus:ring-2 focus:ring-orange focus:border-orange" 
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-orange focus:border-orange text-gray-900 placeholder-gray-500 ${
+                  errors.email ? 'border-red-500' : 'border-midGray'
+                }`}
                 placeholder="john.smith@email.com"
               />
+              {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
             </div>
             <div>
               <label className="block text-sm font-medium text-midGray mb-2">Phone Number</label>
@@ -139,9 +248,13 @@ const Contact = () => {
                 value={formData.phone}
                 onChange={handleChange}
                 required
-                className="w-full p-3 border border-midGray rounded-lg focus:ring-2 focus:ring-orange focus:border-orange" 
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-orange focus:border-orange text-gray-900 placeholder-gray-500 ${
+                  errors.phone ? 'border-red-500' : 'border-midGray'
+                }`}
                 placeholder="(555) 123-4567"
+                maxLength="14"
               />
+              {errors.phone && <p className="mt-1 text-sm text-red-500">{errors.phone}</p>}
             </div>
             <div>
               <label className="block text-sm font-medium text-midGray mb-2">Service Needed</label>
@@ -150,7 +263,9 @@ const Contact = () => {
                 value={formData.service}
                 onChange={handleChange}
                 required
-                className="w-full p-3 border border-midGray rounded-lg focus:ring-2 focus:ring-orange focus:border-orange"
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-orange focus:border-orange text-gray-900 placeholder-gray-500 ${
+                  errors.service ? 'border-red-500' : 'border-midGray'
+                }`}
               >
                 <option value="">Select a service...</option>
                 <option value="Kitchen Remodeling">Kitchen Remodeling</option>
@@ -160,6 +275,7 @@ const Contact = () => {
                 <option value="General Repairs">General Repairs</option>
                 <option value="Other">Other</option>
               </select>
+              {errors.service && <p className="mt-1 text-sm text-red-500">{errors.service}</p>}
             </div>
             <div>
               <label className="block text-sm font-medium text-midGray mb-2">Project Details</label>
@@ -169,9 +285,12 @@ const Contact = () => {
                 value={formData.projectDetails}
                 onChange={handleChange}
                 required
-                className="w-full p-3 border border-midGray rounded-lg focus:ring-2 focus:ring-orange focus:border-orange" 
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-orange focus:border-orange text-gray-900 placeholder-gray-500 resize-vertical ${
+                  errors.projectDetails ? 'border-red-500' : 'border-midGray'
+                }`}
                 placeholder="Please describe your project, timeline, and any specific requirements..."
               />
+              {errors.projectDetails && <p className="mt-1 text-sm text-red-500">{errors.projectDetails}</p>}
             </div>
             <button 
               type="submit" 

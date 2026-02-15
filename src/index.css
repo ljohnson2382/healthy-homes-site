@@ -12,3 +12,43 @@ body {
 h1, h2, h3, h4 {
   font-weight: 700;
 }
+
+/* Ensure form inputs have dark text in ALL states */
+input, textarea, select {
+  color: #111827 !important; /* gray-900 */
+}
+
+input:focus, textarea:focus, select:focus {
+  color: #111827 !important; /* gray-900 */
+}
+
+input:active, textarea:active, select:active {
+  color: #111827 !important; /* gray-900 */
+}
+
+input:hover, textarea:hover, select:hover {
+  color: #111827 !important; /* gray-900 */
+}
+
+/* Ensure text stays dark while typing */
+input[type="text"], input[type="email"], input[type="tel"], textarea {
+  color: #111827 !important; /* gray-900 */
+}
+
+input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus, textarea:focus {
+  color: #111827 !important; /* gray-900 */
+}
+
+/* Dropdown options */
+select option {
+  color: #111827 !important; /* gray-900 */
+  background-color: #ffffff !important; /* white background */
+}
+
+input::placeholder, textarea::placeholder {
+  color: #6b7280 !important; /* gray-500 */
+}
+
+input:focus::placeholder, textarea:focus::placeholder {
+  color: #6b7280 !important; /* gray-500 */
+}
